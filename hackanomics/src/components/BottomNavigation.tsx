@@ -3,12 +3,26 @@
 import { MessageCircle, Utensils, Dumbbell, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function BottomNavigation() {
   const pathname = usePathname();
+  const [chatHref, setChatHref] = useState('/myfoodai');
+
+  useEffect(() => {
+    const type = localStorage.getItem('userType');
+    if (type === 'admin') {
+      setChatHref('/smartmess');
+    } else {
+      setChatHref('/myfoodai');
+    }
+  }, [pathname]);
+
+  // Hide nav on Root and Login pages
+  if (pathname === '/' || pathname === '/login') return null;
 
   const navItems = [
-    { name: 'Chat', href: '/', icon: MessageCircle },
+    { name: 'Chat', href: chatHref, icon: MessageCircle },
     { name: 'Food', href: '/food', icon: Utensils },
     { name: 'Activity', href: '/activity', icon: Dumbbell },
     { name: 'Profile', href: '/profile', icon: User },

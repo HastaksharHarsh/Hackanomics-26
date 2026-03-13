@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NutriBuddy AI",
+  title: "MyFoodAI",
   description: "Your friendly AI-powered nutrition companion.",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
 };

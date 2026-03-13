@@ -20,7 +20,7 @@ export default function Header({ userName, avatarUrl, progress, dateStr, mode }:
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium opacity-90">Good morning, {userName}</span>
-            <h1 className="text-2xl font-black tracking-tight">NutriBuddy <span className="text-yellow-300 font-extrabold tracking-normal">AI</span></h1>
+            <h1 className="text-2xl font-black tracking-tight">MyFood<span className="text-yellow-300 font-extrabold tracking-normal">AI</span></h1>
           </div>
         </div>
 

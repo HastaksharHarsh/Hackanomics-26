@@ -14,7 +14,7 @@ export default function ReminderCard() {
     <div className="px-6 relative">
        <div className="flex items-center gap-2 mb-3">
          <span className="text-orange-400">✨</span>
-         <h2 className="text-xs font-bold text-gray-600 tracking-wider uppercase">Chat with Nutribuddy</h2>
+         <h2 className="text-xs font-bold text-gray-600 tracking-wider uppercase">Chat with MyFoodAI</h2>
        </div>
 
        <Card className="bg-purple-50 border border-purple-100 shadow-sm relative">
