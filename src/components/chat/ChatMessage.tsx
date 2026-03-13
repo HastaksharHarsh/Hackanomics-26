@@ -16,19 +16,19 @@ export default function ChatMessage({ role, content }: ChatMessageProps) {
          </div>
        )}
 
-       <Card 
+       <div 
          className={`
            rounded-2xl p-4 max-w-[85%]
            ${isBot 
-             ? 'bg-white rounded-bl-sm border border-gray-100 text-gray-700' 
-             : 'bg-orange-500 rounded-br-sm text-white shadow-orange-500/20'
+             ? 'bg-white rounded-bl-sm border border-gray-100 text-gray-700 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]' 
+             : 'bg-orange-500 rounded-br-sm text-white shadow-[0_4px_20px_-4px_rgba(249,115,22,0.3)]'
            }
          `}
        >
           <p className="text-[15px] leading-relaxed font-medium">
             {content}
           </p>
-       </Card>
+       </div>
     </div>
   );
 }

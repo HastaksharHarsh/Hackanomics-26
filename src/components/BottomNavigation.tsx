@@ -22,8 +22,8 @@ export default function BottomNavigation() {
   if (pathname === '/' || pathname === '/login') return null;
 
   const navItems = [
-    { name: 'Chat', href: chatHref, icon: MessageCircle },
     { name: 'Food', href: '/food', icon: Utensils },
+    { name: 'Chat', href: chatHref, icon: MessageCircle },
     { name: 'Activity', href: '/activity', icon: Dumbbell },
     { name: 'Profile', href: '/profile', icon: User },
   ];

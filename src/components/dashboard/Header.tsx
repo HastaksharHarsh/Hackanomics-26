@@ -6,9 +6,10 @@ interface HeaderProps {
   progress: number;
   dateStr: string;
   mode: string;
+  greeting?: string;
 }
 
-export default function Header({ userName, avatarUrl, progress, dateStr, mode }: HeaderProps) {
+export default function Header({ userName, avatarUrl, progress, dateStr, mode, greeting = 'Good morning' }: HeaderProps) {
   return (
     <header className="px-6 py-6 bg-gradient-to-br from-orange-400 to-primary-dark text-white rounded-b-3xl shadow-md z-10 relative">
       <div className="flex justify-between items-start mb-4">
@@ -19,7 +20,7 @@ export default function Header({ userName, avatarUrl, progress, dateStr, mode }:
             <span className="text-3xl">🍲</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium opacity-90">Good morning, {userName}</span>
+            <span className="text-sm font-medium opacity-90">{greeting}, {userName}</span>
             <h1 className="text-2xl font-black tracking-tight">MyFood<span className="text-yellow-300 font-extrabold tracking-normal">AI</span></h1>
           </div>
         </div>
@@ -50,7 +51,7 @@ export default function Header({ userName, avatarUrl, progress, dateStr, mode }:
           <span className="w-2 h-2 rounded-full bg-green-400"></span>
           <span>{dateStr}</span>
         </div>
-        <div>{mode}</div>
+        <div className="capitalize">{mode}</div>
       </div>
     </header>
   );

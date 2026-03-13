@@ -15,10 +15,59 @@ interface Message {
   content: string;
 }
 
+const WELCOME_MSG = "Hey yaar! 👋 I'm MyFoodAI, your nutrition buddy. What did you eat today, or how can I help you track your health goals?";
+
+// --- Helpers ---
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function getDateStr(): string {
+  const now = new Date();
+  return now.toLocaleDateString('en-IN', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short'
+  }).replace(',', '') + ' · Week ' + getAcademicWeek(now);
+}
+
+/** Simple academic week counter from Jan 1 of current year */
+function getAcademicWeek(d: Date): number {
+  const start = new Date(d.getFullYear(), 0, 1);
+  const diff = d.getTime() - start.getTime();
+  return Math.ceil((diff / 86400000 + start.getDay() + 1) / 7);
+}
+
 export default function Home() {
   const [isChatMode, setIsChatMode] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [userName, setUserName] = useState('You');
+  const [userGoal, setUserGoal] = useState('');
+  const [currentCondition, setCurrentCondition] = useState('');
+
+  // Load user info from localStorage
+  useEffect(() => {
+    const name = localStorage.getItem('userName') || 'You';
+    setUserName(name);
+    const condition = localStorage.getItem('currentCondition') || '';
+    setCurrentCondition(condition);
+    try {
+      const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      setUserGoal(profile.goal || '');
+    } catch {}
+  }, []);
+
+  // Always seed a fresh greeting on mount — clears any in-memory state from previous nav
+  useEffect(() => {
+    setMessages([
+      { id: 'welcome', role: 'bot', content: WELCOME_MSG }
+    ]);
+    setIsChatMode(false);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,7 +81,6 @@ export default function Home() {
     if (!isChatMode) {
       setIsChatMode(true);
     }
-    
     // Add User message
     const newUserMsg: Message = { id: Date.now().toString(), role: 'user', content };
     setMessages((prev) => [...prev, newUserMsg]);
@@ -45,19 +93,29 @@ export default function Home() {
     ]);
 
     try {
-      // Send context to Grok AI API
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           systemPrompt: 'You are an enthusiastic Indian nutritionist bot named MyFoodAI. Help the student track their macros, remind them about hydration, and use casual, friendly English with occasional Indian slang (like "yaar", "achha"). Keep your answers concise.',
-          messages: [...messages, newUserMsg]
+          messages: [...messages, newUserMsg],
+          currentCondition,
         })
       });
 
       const data = await response.json();
       
-      // Replace 'Thinking...' with the actual response
+      // Handle condition update from AI
+      if (data.conditionUpdate) {
+        const { condition, status } = data.conditionUpdate;
+        if (status === 'cleared') {
+          localStorage.removeItem('currentCondition');
+          setCurrentCondition('');
+        } else if (condition) {
+          localStorage.setItem('currentCondition', condition);
+          setCurrentCondition(condition);
+        }
+      }
       setMessages((prev) => prev.map(msg => 
         msg.id === loadingId ? { ...msg, content: data.message || "I'm having trouble connecting right now." } : msg
       ));
@@ -71,16 +129,13 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full bg-gray-50/50">
-      {/* 
-        This is the fixed / relative header. 
-        It stays on top.
-      */}
       <Header 
-        userName="Harsh"
+        userName={userName}
         avatarUrl=""
         progress={6}
-        dateStr="Fri, Mar 13 · Week 11"
-        mode="maintenance mode"
+        dateStr={getDateStr()}
+        mode={userGoal || 'Health Tracking'}
+        greeting={getGreeting()}
       />
 
       <div className="flex-1 relative flex flex-col pt-4 overflow-y-auto no-scrollbar scroll-smooth">
@@ -97,7 +152,7 @@ export default function Home() {
                 
                 <ReminderCard />
                 
-                <ChatPrompt onShowProgressClick={() => {}} />
+                <ChatPrompt onSendMessage={handleSendMessage} />
               </motion.div>
             )}
          </AnimatePresence>
@@ -111,13 +166,6 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="flex-1 flex flex-col"
               >
-                {/* When entering chat mode, we might want to still show the initial prompt 
-                    as the very first message. Let's prepend it statically if in chat mode */}
-                <ChatMessage 
-                  role="bot" 
-                  content="Hello there! To show your progress, I need a bit more info, yaar. Are you looking for your food intake, activity, hydration, or sleep details?" 
-                />
-                
                 {messages.map((msg) => (
                    <motion.div 
                      key={msg.id}
