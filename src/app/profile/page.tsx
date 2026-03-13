@@ -11,6 +11,7 @@ export default function Profile() {
   const [userType, setUserType] = useState<'student' | 'admin' | null>(null);
   const [userName, setUserName] = useState('');
   const [hostelName, setHostelName] = useState('');
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
     // Read auth state
@@ -23,6 +24,12 @@ export default function Profile() {
     setUserType(type as 'student' | 'admin');
     setUserName(localStorage.getItem('userName') || (type === 'student' ? 'Student' : 'Admin'));
     setHostelName(localStorage.getItem('hostelName') || 'Unknown Hostel');
+    
+    // Read extended profile
+    const profile = localStorage.getItem('userProfile');
+    if (profile) {
+      setUserProfile(JSON.parse(profile));
+    }
   }, [router]);
 
   const handleLogout = () => {
@@ -92,18 +99,37 @@ export default function Profile() {
         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
             <h2 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 px-1">Settings & Preferences</h2>
             <Card className="bg-white border border-gray-100 shadow-sm overflow-hidden">
-               {isStudent && (
-                 <button className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors text-left border-b border-gray-50">
-                    <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
-                      <span className="text-lg">🥗</span>
+                {isStudent && (
+                  <div className="border-b border-gray-50 bg-orange-50/20 p-4">
+                    <h3 className="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-3">AI Health Metrics</h3>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-white p-2 rounded-xl border border-orange-100/50">
+                        <p className="text-[9px] text-gray-400 font-bold uppercase">Weight</p>
+                        <p className="text-sm font-black text-gray-800">{userProfile?.weight || '--'} kg</p>
+                      </div>
+                      <div className="bg-white p-2 rounded-xl border border-orange-100/50">
+                        <p className="text-[9px] text-gray-400 font-bold uppercase">Height</p>
+                        <p className="text-sm font-black text-gray-800">{userProfile?.height || '--'} cm</p>
+                      </div>
+                      <div className="bg-white p-2 rounded-xl border border-orange-100/50">
+                        <p className="text-[9px] text-gray-400 font-bold uppercase">Goal</p>
+                        <p className="text-[11px] font-black text-orange-600 truncate">{userProfile?.goal || 'N/A'}</p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-800 text-sm">Dietary Preferences</h3>
-                      <p className="text-xs text-gray-500">Vegetarian, No Peanuts</p>
-                    </div>
-                    <div className="text-gray-300">→</div>
-                 </button>
-               )}
+                  </div>
+                )}
+                {isStudent && (
+                  <button className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors text-left border-b border-gray-50">
+                     <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
+                       <span className="text-lg">🥗</span>
+                     </div>
+                     <div className="flex-1">
+                       <h3 className="font-bold text-gray-800 text-sm">Dietary Preferences</h3>
+                       <p className="text-xs text-gray-500">{userProfile?.mealType || 'Vegetarian'}, {userProfile?.canCook === 'yes' ? 'Can Cook' : 'Cannot Cook'}</p>
+                     </div>
+                     <div className="text-gray-300">→</div>
+                  </button>
+                )}
                <button className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors text-left border-b border-gray-50">
                   <div className="w-10 h-10 rounded-full bg-gray-50 text-gray-600 flex items-center justify-center shrink-0">
                     <Bell size={18} />

@@ -101,6 +101,12 @@ function LoginContent() {
         </Card>
         
         <div className="text-center mt-6">
+           {isStudent && (
+             <p className="text-xs text-gray-400 mb-4">
+               Don't have an account? 
+               <button onClick={() => router.push('/signup?type=student')} className="ml-1.5 text-orange-500 font-bold hover:underline">Sign Up</button>
+             </p>
+           )}
            <button onClick={() => router.push('/')} className="text-sm font-medium text-gray-400 hover:text-gray-600">
              ← Back to Gateway
            </button>
